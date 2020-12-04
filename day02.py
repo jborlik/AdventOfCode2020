@@ -1,7 +1,7 @@
 #import itertools
 #import numpy
 #import copy
-import re
+import re   # r = re.compile(r'xxx'), m = r.match(str), print(m[1])
 
 re_p = re.compile(r'(\d+)-(\d+) (\w): (\w+)')
 
