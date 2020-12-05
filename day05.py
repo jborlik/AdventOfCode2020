@@ -34,14 +34,14 @@ print(f"Part 1: Max = {maxID}")
 
 # make all seats
 allseats = {}
-for irow in range(0,128):
+for irow in range(1,127):
     for icol in range(0,8):
         allseats[(irow,icol)] = irow*8 + icol
 
 # remove from list
 for aID in alldata:
     rc = getSeat(aID)
-    print(f"---pop {rc}")
+    #print(f"---pop {rc}")
     allseats.pop(rc)
 
 # print remaining
