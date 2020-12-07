@@ -12,6 +12,8 @@ Code is tested with Python 3.8.3 (Anaconda distribution) on Win10. Developed wit
 * Day 4:  Parse a document, separate into sets of key/value pairs, and then check the validity of each set (passport) against several rules.  I fumbled the initial parsing and had trouble figuring out the problem, which ended up being that I was forgetting to add in the last set at the end of the file.  Part 1: 00:42:40, rank 7447.  Part 2: 01:06:41, rank 4820.
 * Day 5:  Part 1 was easy.  For part 2, find the missing seat, given a list of taken seats.  I ended up making a dict of (row,col) and the deleting the keys that were taken.  My time was a bit worse on part 2 because I accidentally didn't iterate over the right number (use a constant!).  Part 1:  00:12:22, rank 1811.  Part 2: 00:30:41, rank 3917.
 * Day 6:  Used a dict to accumulate values, to help with uniqueness.  This was a bit more work in part 1, but made part 2 easier.  Part 1: 00:11:27, rank 4294.  Part 2: 00:18:48, rank 3392.
+* Day 7:  This one had more typing.  Built a tree with nodes that contained pointers up and down.  Part 1 counted up the tree, and part 2 counted down the tree.  Part 1:  00:45:08, rank 4076.  Part 2: 00:55:52, rank 2981.
+
 
 ## See previous work at:
 * https://github.com/jborlik/AdventOfCode2015
