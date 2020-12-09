@@ -14,7 +14,7 @@ Code is tested with Python 3.8.3 (Anaconda distribution) on Win10. Developed wit
 * Day 6:  Used a dict to accumulate values, to help with uniqueness.  This was a bit more work in part 1, but made part 2 easier.  Part 1: 00:11:27, rank 4294.  Part 2: 00:18:48, rank 3392.
 * Day 7:  This one had more typing.  Built a tree with nodes that contained pointers up and down.  Part 1 counted up the tree, and part 2 counted down the tree.  Part 1:  00:45:08, rank 4076.  Part 2: 00:55:52, rank 2981.
 * Day 8:  List of operations that alter a state variable and an op pointer.  Classic AoC.  Took a bit to get the machinery in place.  Part 2 involved trying to find a single op that was corrupted and resulting in an infinite loop.  It took me a bit to realize that one could just brute force it... Just iterate through each line, alter it, re-try the program and stop if the program completes.  Part 1: 00:19:54, rank 5264.  Part 2: 00:41:43, rank 4602.
-
+* Day 9:  Part 1 used itertools.permutations check for validity over a moving window of a list.  Part 2 iterated over the list again, to find a contiguous window that summed to a value.  Brute force seemed good enough.  Part 1: 00:12:09 rank 2879.  Part 2: 00:24:01 rank 3033.
 
 
 ## See previous work at:
