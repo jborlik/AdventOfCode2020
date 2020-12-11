@@ -15,7 +15,9 @@ Code is tested with Python 3.8.3 (Anaconda distribution) on Win10. Developed wit
 * Day 7:  This one had more typing.  Built a tree with nodes that contained pointers up and down.  Part 1 counted up the tree, and part 2 counted down the tree.  Part 1:  00:45:08, rank 4076.  Part 2: 00:55:52, rank 2981.
 * Day 8:  List of operations that alter a state variable and an op pointer.  Classic AoC.  Took a bit to get the machinery in place.  Part 2 involved trying to find a single op that was corrupted and resulting in an infinite loop.  It took me a bit to realize that one could just brute force it... Just iterate through each line, alter it, re-try the program and stop if the program completes.  Part 1: 00:19:54, rank 5264.  Part 2: 00:41:43, rank 4602.
 * Day 9:  Part 1 used itertools.permutations check for validity over a moving window of a list.  Part 2 iterated over the list again, to find a contiguous window that summed to a value.  Brute force seemed good enough.  Part 1: 00:12:09 rank 2879.  Part 2: 00:24:01 rank 3033.
-* Day 10:  Part 1 was just calling the right numpy function (np.diff).  Part 2 required some thought!  And I ended up [needing help]( https://github.com/neelakantankk/Advent_of_Code_2020/blob/main/Day_10/day_10.py).  
+* Day 10:  Part 1 was just calling the right numpy function (np.diff).  Part 2 required some thought!  And I ended up [needing help]( https://github.com/neelakantankk/Advent_of_Code_2020/blob/main/Day_10/day_10.py).  Part 1: 00:14:19, rank 4074.  Part 2: 22:18:43, rank 30446.
+* Day 11:  A character matrix with rules to change the character state.  The rules involved looking at the neighbors at each character.  Part 2 gave it a twist by requiring looking an arbitrary distance in the eight directions.  Part 1: 00:44:00, rank 3824.  Part 2: 01:06:34, rank 3263.
+
 
 
 ## See previous work at:
