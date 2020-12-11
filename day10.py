@@ -3,6 +3,7 @@ import numpy as np
 #import copy
 #import re   # r = re.compile(r'xxx'), m = r.match(str), print(m[1])
 import collections
+import time
 
 
 with open('day10.dat') as datafile:
@@ -20,7 +21,7 @@ testdata = np.array([int(x.strip()) for x in """16
 12
 4""".splitlines()])
 
-thedata = testdata
+#thedata = testdata
 thedata = alldata
 
 endjolt = np.max(thedata) + 3
@@ -34,35 +35,27 @@ ones = np.count_nonzero(thedatamin1 == 1)
 threes = np.count_nonzero(thedatamin1 == 3)
 print(f"Part 1: Ones={ones} threes={threes}.  1*3 = {ones*threes}")
 
-potentials = collections.deque([ (0, [0]) ])
-successes = []
+START = time.perf_counter()
 
-def returnIfValid(iloc, offset, currentlist):
-    global successes
+# approach from:  https://github.com/neelakantankk/Advent_of_Code_2020/blob/main/Day_10/day_10.py
+# graph of reachable adapters
+graph = {}
+for jolt in thedata:
+    diffs = [(jolt+x) for x in (1,2,3)]
+    diffs = [y for y in thedata if y in diffs]
+    graph[jolt] = diffs
 
-    if iloc + offset < len(thedata):
-        nextval = thedata[iloc + offset]
-        if nextval - thedata[iloc] <= 3:
-            if nextval == endjolt:
-                successes.append(currentlist + [nextval])
-                return (False, False)  # no need to do anything else
-            else:
-                return (nextval, iloc+offset)
-    return (False,False)
+solution = {0:1}  # number of ways to get to item named by key
+for key, value in graph.items():
+    if value == []:
+        break   #nothing reachable, probably last item
+    for val in value:
+        if val in solution.keys():
+            solution[val] += solution[key]   # add all of the ways to get here, to the target
+        else:
+            solution[val] = solution[key]
 
-while potentials:
-    (iloc, aPot) = potentials.popleft()
+END = time.perf_counter()
 
-    nextval, inext = returnIfValid(iloc, 1, aPot)
-    if nextval:
-        potentials.append( (inext, aPot + [nextval]) )
-
-        nextval, inext = returnIfValid(iloc, 2, aPot)
-        if nextval:
-            potentials.append( (inext, aPot + [nextval]) )
-
-            nextval, inext = returnIfValid(iloc, 3, aPot)
-            if nextval:
-                potentials.append( (inext, aPot + [nextval]))
-
-print(f"Part 2: Number of successes = {len(successes)}")
+print(f"Part 2: {solution[thedata[-1]]}")
+print(f"Time taken for part 2: {END - START} seconds")
