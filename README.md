@@ -18,6 +18,8 @@ Code is tested with Python 3.8.3 (Anaconda distribution) on Win10. Developed wit
 * Day 10:  Part 1 was just calling the right numpy function (np.diff).  Part 2 required some thought!  And I ended up [needing help]( https://github.com/neelakantankk/Advent_of_Code_2020/blob/main/Day_10/day_10.py).  Part 1: 00:14:19, rank 4074.  Part 2: 22:18:43, rank 30446.
 * Day 11:  A character matrix with rules to change the character state.  The rules involved looking at the neighbors at each character.  Part 2 gave it a twist by requiring looking an arbitrary distance in the eight directions.  Part 1: 00:44:00, rank 3824.  Part 2: 01:06:34, rank 3263.
 * Day 12:  Movement on a grid based on commands, requiring left/right rotations.  Another classic AoC.  It would be useful to have the direction arrays and approach (x % y for list rotation) set up ahead of time.  Part 1: 00:32:03 rank 4441.  Part 2: 00:51:43 rank 3354.
+* Day 13:  Modulo algebra!  Part 1 was straightforward, just had a cycle through a list.  Part 2 was quite a bit trickier.  I tried a brute-force solution, and ran it overnight (!) without it returning.  The insight (the next day) was that once one identified a time for a pair of buses, that pattern would repeat with the least common multiple of the pair.  So one could then take that aggregated cycle to match with another bus.  This completed successfully in 0.008 sec.  Part 1:  00:18:54, rank 4150.  Part 2: 16:27:24, rank 18332.
+
 
 
 

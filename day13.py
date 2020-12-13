@@ -3,7 +3,7 @@
 #import copy
 #import re   # r = re.compile(r'xxx'), m = r.match(str), print(m[1])
 #import collections
-#import math
+import math
 import time
 
 
@@ -13,6 +13,7 @@ with open('day13.dat') as datafile:
 
 teststarttime = 939
 testdata = '7,13,x,x,59,x,31,19'.split(',')
+#testdata = '17,x,13,19'.split(',')
 
 thedata = testdata
 thestarttime = teststarttime
@@ -47,32 +48,32 @@ print(f"Lowest bus id={lowestbusid} wait time={lowestwaittime} val={lowestbusid*
 END = time.perf_counter()
 print(f"Time taken for part 1: {END - START} seconds")
 
+def lcm(a, b):
+    return abs(a*b) // math.gcd(a, b)
 
 START = time.perf_counter()
 
-def isValidAroundThisTime(itimemax):
-    # now let's check if the buses match up around this time
-    for i, aBus in enumerate(thedata):
+aggregativeCycleLen = int(thedata[0])
+aggregativeCycleOffset = 0
+
+for iMin, aBus in enumerate(thedata):
+    if iMin > 0:
         if aBus != 'x':
             iBus = int(aBus)
-            thistime = itimemax - (maxbusidloc -i)
-            diff = thistime % iBus
-            if diff != 0:
-                return False
-    return True
-    
+            # try different cycles fo aggregativeCycle until the new bus fits
+            # then we can use that length as the new aggregativeCycle
+            icycle = 0
+            while True:
+                icycle += 1
+                itime = aggregativeCycleLen*icycle + aggregativeCycleOffset
+                if (itime + iMin) % iBus == 0:
+                    aggregativeCycleLen = lcm(aggregativeCycleLen, iBus)
+                    aggregativeCycleOffset = itime
+                    print(f"... matched {iBus} to cycle at {itime}+{iMin}.  CycleLen={aggregativeCycleLen} Offset={aggregativeCycleOffset}")
+                    break
+            
 
-
-icycle = 0
-while True:
-    icycle += 1
-    itimemax = maxbusid * icycle
-    gotit = isValidAroundThisTime(itimemax)
-    if gotit:
-        break
-
-itimestart = icycle*maxbusid - maxbusidloc
-print(f"Part 2:  at {itimestart}")
+print(f"Part 2:  at {aggregativeCycleOffset}")
 
 END = time.perf_counter()
 print(f"Time taken for part 2: {END - START} seconds")
