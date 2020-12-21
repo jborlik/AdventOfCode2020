@@ -29,6 +29,14 @@ thedata = alldata
 re_1 = re.compile(r'(\d+): \"(\w)\"')
 re_2 = re.compile(r'(\d+): ([\d+ ]+)\|([\d+ ]+)')
 re_3 = re.compile(r'(\d+): ([\d+ ]+)')
+
+# For reference, someone else did the rule parsing like:
+#rules = {int(r.split(':')[0]):
+#            [[int(x) for x in sr.split()]
+#             for sr in r.split(':')[1].split('|')]
+#            if '"' not in r else r[-2]
+#         for r in rules}
+
 #  parse the rule structure
 class Rule:
     def __init__(self, aRule):
@@ -63,7 +71,10 @@ class Rule:
 
     def _matchPartialRule(self, allRules, aLine) -> int:
         if self.value != None:
+            if len(aLine) == 0:
+                return 0
             return 1 if (aLine[0] == self.value) else 0
+        # We need to try out both, and potentially return both, which could have progressed a different amount
         for opts in self.options:
             count = self._matchList(allRules, opts, aLine)
             if count != 0:
@@ -102,7 +113,16 @@ print(f"Time taken for part 1: {END - START} seconds")
 
 START = time.perf_counter()
 
+rules['8'].options = [ ['42'], ['42', '8'] ]    # 8: 42 | 42 8
+rules['11'].options = [ ['42', '31'], ['42', '11', '31'] ]    # 11: 42 31 | 42 11 31
 
+count = 0
+for iM, aMessage in enumerate(messages):
+    bMatch = rules['0'].matchRule(rules, aMessage)
+    count += bMatch
+    print(f"Message {iM}:  {bMatch}")
+
+print(f"Part 2:  count = {count}")
 
 
 END = time.perf_counter()
