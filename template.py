@@ -5,6 +5,8 @@
 #import collections
 #import math
 import time
+#import pprint
+
 
 with open('day17.dat') as datafile:
     alldata = [x.strip() for x in datafile.readlines()]
@@ -27,11 +29,22 @@ thedata = testdata
 #thedata = alldata
 
 
+
+# ------------------------------------------------------------------------------------
+#  Part 1
+# ------------------------------------------------------------------------------------
+
+
 START = time.perf_counter()
 
 
 END = time.perf_counter()
 print(f"Time taken for part 1: {END - START} seconds")
+
+
+# ------------------------------------------------------------------------------------
+#  Part 2
+# ------------------------------------------------------------------------------------
 
 START = time.perf_counter()
 
