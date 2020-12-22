@@ -27,6 +27,7 @@ Code is tested with Python 3.8.3 (Anaconda distribution) on Win10. Developed wit
 * Day 19:  Got part 1 after some trouble, but didn't get part 2 yet.  I need to restructure to be able to return either branch of the "or" style matching.
 * Day 20:  Arranging tiles together by matching borders (like a puzzle!).  The tiles can be rotated and flipped.  And then locate patterns in the resulting image.  Fun, but I haven't gotten part 2 right yet.
 * Day 21:  Sort and link foods - ingredients - allergens, to allow a back-elimination to figure out which ingredients have which allergen.  Some work, but got it.  After the last two failures, this was a nice win.  Part 1:  01:00:31 rank 2335.  Part 2:  01:21:53 rank 2465.
+* Day 22:  The game of War, mostly.  Part 1 was simple, part 2 was also straightforward even though it involved recursion, checking/storing state, and other messy details.  Part 1:  00:31:31  rank 3343.  Part 2:  01:35:21  rank 2714.
  
 
 
