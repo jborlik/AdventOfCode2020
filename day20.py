@@ -126,7 +126,7 @@ seamonster = (seamonster==35)
 seamonster_count = np.sum(seamonster)
 
 thedata = testdata
-thedata = alldata
+#thedata = alldata
 
 tiles = {}
 re_name = re.compile(r'Tile (\d+):')
@@ -189,7 +189,7 @@ for tilename, matcharr in matches.items():
             emptycount += 1
     if emptycount >=2:
         missingtwo.append(tilename)
-        if len(matcharr[0])==0 and len(matcharr[3])==0:
+        if len(matcharr[2])==0 and len(matcharr[3])==0:
             topleftcorner = tilename
 
 product = 1
@@ -198,8 +198,7 @@ for val in missingtwo:
 
 print(f"Part 1:  val = {product}, {missingtwo}")
 
-if topleftcorner == None:
-    topleftcorner = missingtwo[0]
+topleftcorner = missingtwo[0]
 
 print(f"Top left corner tile: {topleftcorner}")
 
@@ -224,7 +223,7 @@ flipresult = [3, 2, 1, 0]
 def findConnectedTile(irow,icol, offset, whichedge):
     """ whichedge from the known tile = 2 (south) for offset (-1,0), =1 (east) for offset (0,-1) """
     conTile = tileorg[( irow+offset[0], icol+offset[1]) ]   # this is (name, rotcount, flip) of the tile
-    iedge = (whichedge - conTile[1]) % 4   # index of the connection after rotating
+    iedge = (whichedge + conTile[1]) % 4   # index of the connection after rotating
     if conTile[2]:
         iedge = flipresult[iedge]
     conTileConnections = matches[conTile[0]] # is name: narr,earr,sarr,warr where arr entries are (name, dir, flip)
@@ -233,20 +232,36 @@ def findConnectedTile(irow,icol, offset, whichedge):
         print(f"FAILURE:  {conTileConnections}")
     assert len(conTileConnections[iedge]) == 1 # if this isn't true, then maybe things aren't uniquely connected
     linkToThis = conTileConnections[iedge][0]  # the only entry along the side
-    thistiledir = (linkToThis[1] - ( (whichedge-2) % 4 ) ) % 4  # turn it so the matching side is facing the right direction
     thistileflip = conTile[2] != linkToThis[2]  # only flip this tile if necessary
+    thistiledir = (linkToThis[1] - ( (whichedge-2) % 4 ) ) % 4  # turn it so the matching side is facing the right direction
+    if thistileflip:
+        thistiledir = flipresult[thistiledir]
     return (linkToThis[0], thistiledir, thistileflip)
 
 for irow in range(PICTURELEN):
     if irow==0:
-        tileorg[(0,0)] = (topleftcorner, 0, False)
-        if topleftcorner == '2801':  # YES I'M HARDCODING THIS SUE ME
-            tileorg[(0,0)] = (topleftcorner, 2, False)
+        connections = matches[topleftcorner]
+        flip = True
+        for irot in range(4):
+            if len(connections[flipresult[(0+irot)%4]])==0 and len(connections[flipresult[(3+irot)%4]])==0:
+                break
+        if irot == 4:
+            flip = False
+            if len(connections[(0+irot)%4])==0 and len(connections[(3+irot)%4])==0:
+                break
+        if irot == 4:
+            raise f"Top level tile {topleftcorner} can't be flipped into position: {connections}"
+
+        tileorg[(0,0)] = (topleftcorner, irot, flip)
+        print(f"(0,0) = {topleftcorner} rotated={irot} flip={flip}")
+
     else:
         tileorg[(irow,0)] = findConnectedTile(irow,0, (-1,0), 2)
+        print(f"({irow},0) = {tileorg[(irow,0)][0]} rotated={tileorg[(irow,0)][1]} flip={tileorg[(irow,0)][2]}")
 
     for icol in range(1,PICTURELEN):
         tileorg[(irow,icol)] = findConnectedTile(irow,icol,(0,-1), 1)
+        print(f"({irow},{icol}) = {tileorg[(irow,icol)][0]} rotated={tileorg[(irow,icol)][1]} flip={tileorg[(irow,icol)][2]}")
 
 print(tileorg)
 
@@ -265,7 +280,7 @@ for irow in range(PICTURELEN):
     rowarrs.append(thisrow)
 picture = np.vstack(rowarrs)
 
-print(picture)
+print(picture*1)
 
 if False:
     import matplotlib.pyplot as plt
