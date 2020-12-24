@@ -60,30 +60,37 @@ class Rule:
                 else:
                     raise Exception(f"Unknown rule: {aLine}")
 
-    def _matchList(self, allRules, optList, aLine) -> int:
-        index = 0
-        for rulenum in optList:
-            thisone = allRules[rulenum]._matchPartialRule(allRules, aLine[index:])
-            if thisone == 0:
-                return 0
-            index += thisone
-        return index
+    def _matchList(self, allRules, optList, aLine):
+        retval = []   # array of matched characters from aLine
+        if len(optList)>=1:
+            retval.extend( allRules[optList[0]]._matchPartialRule(allRules, aLine)) 
+        if len(optList)>=2:
+            for rule2 in optList[1:]:
+                # okay we may have multiple matches from the first one, and we have to try all of them
+                retval2 = []
+                for amatch in retval:
+                    matches = allRules[rule2]._matchPartialRule(allRules, aLine[amatch:])
+                    for i,m in enumerate(matches):
+                        matches[i] = m + amatch
+                    retval2.extend(matches)
+                retval = retval2
+        return retval                
 
-    def _matchPartialRule(self, allRules, aLine) -> int:
+
+    def _matchPartialRule(self, allRules, aLine):
         if self.value != None:
             if len(aLine) == 0:
-                return 0
-            return 1 if (aLine[0] == self.value) else 0
+                return []
+            return [1] if (aLine[0] == self.value) else []
         # We need to try out both, and potentially return both, which could have progressed a different amount
+        retval = []
         for opts in self.options:
-            count = self._matchList(allRules, opts, aLine)
-            if count != 0:
-                return count
-        return 0
+            retval.extend( self._matchList(allRules, opts, aLine) )
+        return retval
 
     def matchRule(self, allRules, aLine):
-        count = self._matchPartialRule(allRules, aLine)
-        return count == len(aLine)
+        matches = self._matchPartialRule(allRules, aLine)
+        return (len(matches) >= 1) and (matches[0] == len(aLine))
             
 
 
@@ -110,6 +117,9 @@ print(f"Part 1:  count = {count}")
 
 END = time.perf_counter()
 print(f"Time taken for part 1: {END - START} seconds")
+
+
+
 
 START = time.perf_counter()
 
