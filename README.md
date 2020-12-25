@@ -30,6 +30,7 @@ Code is tested with Python 3.8.3 (Anaconda distribution) on Win10. Developed wit
 * Day 22:  The game of War, mostly.  Part 1 was simple, part 2 was also straightforward even though it involved recursion, checking/storing state, and other messy details.  Part 1:  00:31:31  rank 3343.  Part 2:  01:35:21  rank 2714.
 * Day 23:  Moving objects around a ring.  At first I used a deque, and this was great for Part 1.  But Part 2 made the ring 1M, with 10M moves, and the deque (with its lovely rotate function) just didn't scale.  A different approach was to use a dict with each key pointing to the next entry in the ring.  So the moves were cheap (just changing the pointer values), and the search for the destination location was relatively cheap too (since a dict is hashed).  Part 1:  00:36:19 rank 1367.  Part 2:  02:00:05  rank 1451.
 * Day 24:  Game of life (part 2) on a hex grid!  I remember hex grids from [2017 day 11](https://github.com/jborlik/AdventOfCode2017) and as before, a quick review of [Red Blob Games](https://www.redblobgames.com/grids/hexagons/#coordinates) was very useful.  Part 1:  00:47:34 rank 2627.  Part 2:  01:06:26  rank 1932.
+* Day 25:  Straightforward encryption-like thing.  But part 2 requires that I have the rest done!
 
 
 
