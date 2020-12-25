@@ -126,7 +126,7 @@ seamonster = (seamonster==35)
 seamonster_count = np.sum(seamonster)
 
 thedata = testdata
-#thedata = alldata
+thedata = alldata
 
 tiles = {}
 re_name = re.compile(r'Tile (\d+):')
@@ -218,7 +218,33 @@ START = time.perf_counter()
 tileorg = {}  #  (row,col):  (name, rotcount, flip t/f)
 
 # 0, 1, 2, 3 -> 3, 2, 1, 0
-flipresult = [3, 2, 1, 0]
+#flipresult = [3, 2, 1, 0]
+flipresult = [2, 1, 0, 3]
+
+
+def portDir( idir, irot, flipped):
+    """ finds internal index for a desired direction idir, given rotation and flip """
+    theport = (idir + irot) % 4
+    if flipped:
+        theport = flipresult[theport]
+    return theport
+
+def getOrgTileConnection( irow, icol, idir):
+    """iport=0,1,2,3 n,e,s,w, in the actual positioned tile frame
+       returns the tile connections for that port"""
+    theTile = tileorg[ (irow, icol) ]
+    assert theTile != None  # we haven't placed that tile yet?
+    theport = portDir(idir, theTile[1], theTile[2])
+    return matches[theTile[0]][theport]
+
+
+def getPicture(irow, icol):
+    thistile = tileorg[(irow,icol)]  # (name, rots, flip)
+    pic = tiles[thistile[0]][1:-1,1:-1]
+    if thistile[2]:
+        pic = np.flipud(pic)    
+    pic = np.rot90(pic, k=thistile[1])
+    return pic
 
 def findConnectedTile(irow,icol, offset, whichedge):
     """ whichedge from the known tile = 2 (south) for offset (-1,0), =1 (east) for offset (0,-1) """
@@ -238,40 +264,122 @@ def findConnectedTile(irow,icol, offset, whichedge):
         thistiledir = flipresult[thistiledir]
     return (linkToThis[0], thistiledir, thistileflip)
 
+def findConnectedTile2(irow, icol, northOrg, westOrg):
+    northmatch = []
+    northflip = False
+    westmatch = []
+    westflip = False
+    thistilename = ''
+    if northOrg:
+        connhere = getOrgTileConnection(irow-1, icol, 2) # southbound
+        assert len(connhere) == 1
+        connhere = connhere[0]
+        thistilename = connhere[0]
+        northmatch = [northOrg[0]]
+        northflip = connhere[2] != northOrg[2]
+    if westOrg:
+        connhere = getOrgTileConnection(irow, icol-1, 1) # eastbound
+        assert len(connhere) == 1
+        connhere = connhere[0]
+        assert len(thistilename)==0 or thistilename == connhere[0]
+        if len(thistilename)==0:
+            thistilename = connhere[0]
+        westmatch = [westOrg[0]]
+        westflip = connhere[2] != westOrg[2]
+    # we should know whether or not we need to flip from the connections
+    thistileflip = westflip or northflip
+    # now find the rotation that gives us the 
+    thistileflip = True
+    connections = matches[thistilename]
+    gotit = False
+    for irot in range(4):
+        north = connections[portDir(0,irot,True)]
+        if len(north) > 0:
+            north = [ north[0][0] ]
+        west = connections[portDir(3,irot,True)]
+        if len(west) > 0:
+            west = [ west[0][0] ]
+        if (north == northmatch) and (west == westmatch):
+            gotit = True
+            break
+    if not gotit:
+        thistileflip = False
+        for irot in range(4):
+            north = connections[portDir(0,irot,thistileflip)]
+            if len(north) > 0:
+                north = [ north[0][0] ]
+            west = connections[portDir(3,irot,thistileflip)]
+            if len(west) > 0:
+                west = [ west[0][0] ]
+            if (north == northmatch) and (west == westmatch):
+                gotit = True
+                break
+        if not gotit:
+            raise f"Tile at {irow},{icol} named {thistilename} can't figure out how to match.  {connections}"
+
+    return (thistilename, irot, thistileflip)
+
+
+        
+
+
+    
+    
+
+
+
+
 for irow in range(PICTURELEN):
     if irow==0:
         connections = matches[topleftcorner]
         flip = True
+        gotit = False
         for irot in range(4):
             if len(connections[flipresult[(0+irot)%4]])==0 and len(connections[flipresult[(3+irot)%4]])==0:
+                gotit = True
                 break
-        if irot == 4:
+        if not gotit:
             flip = False
-            if len(connections[(0+irot)%4])==0 and len(connections[(3+irot)%4])==0:
-                break
-        if irot == 4:
-            raise f"Top level tile {topleftcorner} can't be flipped into position: {connections}"
+            for irot in range(4):
+                if len(connections[(0+irot)%4])==0 and len(connections[(3+irot)%4])==0:
+                    gotit = True
+                    break
+            if not gotit:
+                raise f"Top level tile {topleftcorner} can't be flipped into position: {connections}"
 
         tileorg[(0,0)] = (topleftcorner, irot, flip)
         print(f"(0,0) = {topleftcorner} rotated={irot} flip={flip}")
 
+#        print(f"(0,0) n: {getOrgTileConnection(0,0,0)}")
+#        print(f"(0,0) e: {getOrgTileConnection(0,0,1)}")
+#        print(f"(0,0) s: {getOrgTileConnection(0,0,2)}")
+#        print(f"(0,0) w: {getOrgTileConnection(0,0,3)}")
+
+#        p1 = getPicture(0,0)
+#        print(p1*1)
+#        exit()
+
+
+
     else:
-        tileorg[(irow,0)] = findConnectedTile(irow,0, (-1,0), 2)
+        tileorg[(irow,0)] = findConnectedTile2(irow,0, tileorg[(irow-1,0)], None)
         print(f"({irow},0) = {tileorg[(irow,0)][0]} rotated={tileorg[(irow,0)][1]} flip={tileorg[(irow,0)][2]}")
 
     for icol in range(1,PICTURELEN):
-        tileorg[(irow,icol)] = findConnectedTile(irow,icol,(0,-1), 1)
-        print(f"({irow},{icol}) = {tileorg[(irow,icol)][0]} rotated={tileorg[(irow,icol)][1]} flip={tileorg[(irow,icol)][2]}")
+        northOrg = None
+        if irow > 0:
+            northOrg = tileorg[(irow-1, icol)]
+        tileorg[(irow,icol)] = findConnectedTile2(irow,icol,northOrg, tileorg[(irow, icol-1)])
+
+        print(f"{irow},{icol} = {tileorg[(irow,icol)]}")
+        print(f"  {irow},{icol} n = {getOrgTileConnection(irow,icol,0)}")
+        print(f"  {irow},{icol} e = {getOrgTileConnection(irow,icol,1)}")
+        print(f"  {irow},{icol} s = {getOrgTileConnection(irow,icol,2)}")
+        print(f"  {irow},{icol} w = {getOrgTileConnection(irow,icol,3)}")
 
 print(tileorg)
 
-def getPicture(irow, icol):
-    thistile = tileorg[(irow,icol)]  # (name, rots, flip)
-    pic = tiles[thistile[0]][1:-1,1:-1]
-    pic = np.rot90(pic, k=thistile[1])
-    if thistile[2]:
-        pic = np.flip(pic)
-    return pic
+
 
 # okay, rack 'em and stack 'em
 rowarrs = []
@@ -281,6 +389,7 @@ for irow in range(PICTURELEN):
 picture = np.vstack(rowarrs)
 
 print(picture*1)
+
 
 if False:
     import matplotlib.pyplot as plt
@@ -298,7 +407,7 @@ print(f"Seamonster true count: {seamonster_count}")
 
 for iFlip in [False, True]:
     if iFlip:
-        picture = np.flip(picture)
+        picture = np.flipud(picture)
     for iRot in range(4):
         picture = np.rot90(picture)
         # test
@@ -312,9 +421,9 @@ for iFlip in [False, True]:
                     print(f"  Seamonster starting at irow={irow} icol={icol}")
                     thisseamonsters += 1
         print(f"Flip={iFlip} Rot={iRot} seamonsters={thisseamonsters}")
-        #if thisseamonsters > numseamonsters:
-        #    numseamonsters = thisseamonsters
-        numseamonsters += thisseamonsters 
+        if thisseamonsters > numseamonsters:
+            numseamonsters = thisseamonsters
+        #numseamonsters += thisseamonsters 
 
 
 print(f"Part 2:  roughness = {picture_count - numseamonsters*seamonster_count}")
